@@ -45,25 +45,29 @@ export class AppComponent {
   ngOnInit() {
     navigator.geolocation.getCurrentPosition(async (position) => {
       if (position) {
-        this.latitude = position.coords.latitude;
-        this.longitude = position.coords.longitude;
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+        let loader = new Loader({
+          apiKey: environment.googleApiKey,
+          version: "weekly",
+  
+        });
+
+      loader.load().then(() => {
+          new google.maps.Map(document.getElementById("map") as HTMLElement, {
+            center: { lat, lng },
+            zoom: 12,
+            mapId: environment.googleMapId,
+            mapTypeControl: false,
+            fullscreenControl: false,
+
+            streetViewControl: false,
+           
+          });
+        });
       }
-    });
+    }) 
 
-    let loader = new Loader({
-      apiKey: environment.googleApiKey,
-      version: 'weekly',
-    });
-
-    loader.load().then(() => {
-      new google.maps.Map(document.getElementById('map') as HTMLElement, {
-        center: { lat: this.latitude, lng: this.longitude },
-        zoom: 15,
-        mapId: environment.googleMapId,
-        mapTypeControl: false,
-        streetViewControl: false,
-      });
-    });
   }
 
   fetchOwnwership() {

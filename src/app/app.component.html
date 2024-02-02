@@ -1,80 +1,82 @@
-<div
-  id="map"
-  class="w-[100dvw] h-[100dvh] bg-slate-500 flex items-start justify-end relative"
->
-<header class="flex items-center mt-5 justify-between w-4/5">
-    <nav class=" flex items-center gap-3">
-        <form
-          [formGroup]="filter"
-          class="grid grid-cols-3 w-[660px] bg-white rounded-3xl px-3 py-2"
-        >
-          <select
-            formControlName="ownership"
-            class="text-gray-600 px-2 py-1 focus:outline-none"
-          >
-            <option value="">Select Ownership</option>
-            @for (item of ownwership; track $index) {
-            <option value="item">{{ item }}</option>
-            }
-          </select>
-          <select
-            formControlName="type"
-            class="text-gray-600 px-2 py-1 focus:outline-none"
-          >
-            <option value="">Select Type</option>
-            @for (item of types; track $index) {
-            <option value="item">{{ item }}</option>
-            }
-          </select>
-          <div class="flex flex-col relative">
-            <input
-              type="text"
-              class="text-gray-600 px-2 py-1 focus:outline-none"
-              placeholder="Search For Town"
-              formControlName="town"
-            />
-            @if(filter.get('town')!.invalid && filter.get('town')!.touched &&
-            townList.length === 0){
-            <div
-              class="bg-white max-h-80 overflow-scroll w-52 border-gray-300 shadow-slate-300 shadow-sm absolute top-14 rounded-md"
+<main>
+    <header class=" absolute flex items-center mt-5 justify-between w-4/5 z-10 right-1">
+        <nav class=" flex items-center gap-3">
+            <form
+              [formGroup]="filter"
+              class="grid grid-cols-3 w-[660px] bg-white rounded-3xl px-3 py-2"
             >
-              <div class="px-4 py-3 text-center text-red-500 text-xs">
-                <p>No Town Found</p>
+              <select
+                formControlName="ownership"
+                class="text-gray-600 px-2 py-1 focus:outline-none"
+              >
+                <option value="">Select Ownership</option>
+                @for (item of ownwership; track $index) {
+                <option value="item">{{ item }}</option>
+                }
+              </select>
+              <select
+                formControlName="type"
+                class="text-gray-600 px-2 py-1 focus:outline-none"
+              >
+                <option value="">Select Type</option>
+                @for (item of types; track $index) {
+                <option value="item">{{ item }}</option>
+                }
+              </select>
+              <div class="flex flex-col relative">
+                <input
+                  type="text"
+                  class="text-gray-600 px-2 py-1 focus:outline-none"
+                  placeholder="Search For Town"
+                  formControlName="town"
+                />
+                @if(filter.get('town')!.invalid && filter.get('town')!.touched &&
+                townList.length === 0){
+                <div
+                  class="bg-white max-h-80 overflow-scroll w-52 border-gray-300 shadow-slate-300 shadow-sm absolute top-14 rounded-md"
+                >
+                  <div class="px-4 py-3 text-center text-red-500 text-xs">
+                    <p>No Town Found</p>
+                  </div>
+                </div>
+                } @if(townList.length > 0){
+                <div
+                  class="bg-white max-h-80 overflow-scroll py-2 w-52 border-gray-300 shadow-slate-300 shadow-sm absolute top-14 rounded-md"
+                >
+                  @for (item of townList; track $index) {
+                  <div class="px-4 py-3" (click)="select(item)">
+                    <p>{{ item }}</p>
+                  </div>
+                  }
+                </div>
+                }
               </div>
-            </div>
-            } @if(townList.length > 0){
-            <div
-              class="bg-white max-h-80 overflow-scroll py-2 w-52 border-gray-300 shadow-slate-300 shadow-sm absolute top-14 rounded-md"
+            </form>
+            <button
+              [disabled]="!filter.valid"
+              class="disabled:bg-blue-400 text-white p-2 rounded-md bg-blue-500"
             >
-              @for (item of townList; track $index) {
-              <div class="px-4 py-3" (click)="select(item)">
-                <p>{{ item }}</p>
-              </div>
-              }
-            </div>
-            }
+              Search
+            </button>
+          </nav>
+          <div class="flex gap-2">
+            <form class="flex gap-2"[formGroup]="hospital" (ngSubmit)="searchHospital()">
+                 @if(search){
+                <input type="text" class="rounded-md px-2" formControlName="search" placeholder="Search Hospital">
+             }
+            <button class="p-2 rounded-md bg-white" (click)="displaySearch()">
+              <img src="assets/search.svg" alt="" />
+            </button>
+            </form>
+           
           </div>
-        </form>
-        <button
-          [disabled]="!filter.valid"
-          class="disabled:bg-blue-400 text-white p-2 rounded-md bg-blue-500"
-        >
-          Search
-        </button>
-      </nav>
-      <div class="flex gap-2">
-        <form class="flex gap-2"[formGroup]="hospital" (ngSubmit)="searchHospital()">
-             @if(search){
-            <input type="text" class="rounded-md px-2" formControlName="search" placeholder="Search Hospital">
-         }
-        <button class="p-2 rounded-md bg-white" (click)="displaySearch()">
-          <img src="assets/search.svg" alt="" />
-        </button>
-        </form>
-       
-      </div>
-</header>
- 
-</div>
+    </header>
+    <div
+    id="map"
+    class="w-[100dvw] h-[100dvh] bg-slate-500 flex items-start justify-end relative z-0"
+  ></div> 
+</main>
+
+
 
 <router-outlet />
