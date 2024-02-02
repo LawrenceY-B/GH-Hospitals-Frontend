@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
-import { Ownership } from "../types/responses.types";
+import { IOwnership, ITown, ITownResponse } from "../types/responses.types";
 
 @Injectable({
     providedIn: 'root',
@@ -11,6 +11,17 @@ export class ApiService {
     url = environment.BackendUrl;
     getOwnwership() {
         let url = `${this.url}/ownerships`;
-        return this.http.get<Ownership>(url);
+        return this.http.get<IOwnership>(url);
+    }
+    getType(){
+        let url = `${this.url}/types`;
+        return this.http.get<IOwnership>(url);
+    }
+    getTown(name: string){
+        let url = this.url + "/search/town";
+       const body = {
+            name: name
+        }
+        return this.http.post<ITownResponse>(url, body);
     }
 }
