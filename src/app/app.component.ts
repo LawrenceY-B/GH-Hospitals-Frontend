@@ -11,12 +11,13 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ITown, ITownResponse } from './shared/types/responses.types';
+import { ISearch, ITown, ITownResponse } from './shared/types/responses.types';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterOutlet, FormsModule, ReactiveFormsModule],
+  imports: [RouterOutlet, FormsModule, ReactiveFormsModule, CommonModule],
   templateUrl: './app.component.html',
   styleUrl: './app.component.scss',
 })
@@ -28,19 +29,22 @@ export class AppComponent {
   ownwership!: string[];
   types!: string[];
   townList: string[] = [];
+  selectedSearch!: string;
+  searchResults: ISearch[] = [];
   filter = this.fb.group({
     ownership: ['', Validators.required],
     type: ['', Validators.required],
     town: ['', Validators.required],
   });
   hospital = this.fb.group({
-    search: ['', Validators.required],
+    search: [''],
   });
   selectedTown!: string;
   constructor(private api: ApiService, private fb: NonNullableFormBuilder) {
     this.fetchOwnwership();
     this.fetchType();
     this.debounce();
+    this.debounceSearch();
   }
   ngOnInit() {
     navigator.geolocation.getCurrentPosition(async (position) => {
@@ -49,12 +53,11 @@ export class AppComponent {
         const lng = position.coords.longitude;
         let loader = new Loader({
           apiKey: environment.googleApiKey,
-          version: "weekly",
-  
+          version: 'weekly',
         });
 
-      loader.load().then(() => {
-          new google.maps.Map(document.getElementById("map") as HTMLElement, {
+        loader.load().then(() => {
+          new google.maps.Map(document.getElementById('map') as HTMLElement, {
             center: { lat, lng },
             zoom: 12,
             mapId: environment.googleMapId,
@@ -62,12 +65,10 @@ export class AppComponent {
             fullscreenControl: false,
 
             streetViewControl: false,
-           
           });
         });
       }
-    }) 
-
+    });
   }
 
   fetchOwnwership() {
@@ -98,7 +99,6 @@ export class AppComponent {
       error: (error) => {
         if (error.error.message === 'No Town found') {
           this.townList = [];
-          console.error('No town found');
         } else {
           console.error('There was an error!', error);
         }
@@ -118,7 +118,6 @@ export class AppComponent {
   }
   select(town: string) {
     this.selectedTown = town;
-
     this.filter.get('town')!.setValue(town);
     this.townList = [];
   }
@@ -126,7 +125,36 @@ export class AppComponent {
     this.search = !this.search;
   }
   searchHospital() {
-    console.log(this.hospital.value.search);
+    const name = this.hospital.value.search as string;
+    this.api.searchHospitals(name).subscribe({
+      next: (response) => {
+        console.log(response);
+        this.searchResults = response.data;
+        console.log(this.searchResults)
+      },
+      error: (error) => {
+        if (error.error.message === 'No hospital found') {
+          this.searchResults = [];
+        }
+        console.error('There was an error!', error);
+      },
+    });
+  }
+  debounceSearch() {
+    this.hospital
+      .get('search')!
+      .valueChanges.pipe(debounceTime(1500), distinctUntilChanged())
+      .subscribe((value) => {
+        if (this.selectedSearch === value) {
+          return;
+        }
+        this.searchHospital();
+      });
+  }
+  selectSearch(hospital: string) {
+    this.selectedSearch = hospital;
+    this.hospital.get('search')!.setValue(hospital);
+    this.searchResults = [];
   }
 }
 //api integration for search and filter

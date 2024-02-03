@@ -1,1 +1,17 @@
 
+.active{
+    display: block;
+    background-color: #f4f4f4;
+    color: #000;   
+    border-radius: 5px;
+    animation: fadeIn 0.8s ease;
+}
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+    to {
+        opacity: 1;
+    }
+    
+}
