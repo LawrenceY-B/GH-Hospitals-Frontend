@@ -11,7 +11,7 @@ import {
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
-import { ISearch, ITown, ITownResponse } from './shared/types/responses.types';
+import { IFilter, ISearch, ITown, ITownResponse } from './shared/types/responses.types';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -30,7 +30,9 @@ export class AppComponent {
   types!: string[];
   townList: string[] = [];
   selectedSearch!: string;
+  selectedTown!: string;
   searchResults: ISearch[] = [];
+  filteredResults: ISearch[] = [];
   filter = this.fb.group({
     ownership: ['', Validators.required],
     type: ['', Validators.required],
@@ -39,7 +41,6 @@ export class AppComponent {
   hospital = this.fb.group({
     search: [''],
   });
-  selectedTown!: string;
   constructor(private api: ApiService, private fb: NonNullableFormBuilder) {
     this.fetchOwnwership();
     this.fetchType();
@@ -156,5 +157,28 @@ export class AppComponent {
     this.hospital.get('search')!.setValue(hospital);
     this.searchResults = [];
   }
+  filterHospital(){
+    const data = this.filter.value;
+    const param: IFilter ={
+      ownership: data.ownership as string,
+      type: data.type as string,
+      town: data.town as string,
+    }
+    console.log(param)
+    this.api.filterHospitals(param).subscribe({
+      next: (response) => {
+        this.filteredResults = response.data;
+        console.table(this.filteredResults)
+      },
+      error: (error) => {
+        if (error.error.message === 'No hospital found') {
+          this.searchResults = [];
+        }
+        console.error('There was an error!', error);
+      },
+    });
+   
+  }
 }
+
 //api integration for search and filter

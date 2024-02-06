@@ -1,7 +1,7 @@
 import { HttpClient } from "@angular/common/http";
 import { Injectable } from "@angular/core";
 import { environment } from "../../../environments/environment";
-import { IOwnership, ISearchResponse, ITown, ITownResponse } from "../types/responses.types";
+import { IFilter, IFilterResponse, IOwnership, ISearchResponse, ITown, ITownResponse } from "../types/responses.types";
 
 @Injectable({
     providedIn: 'root',
@@ -30,5 +30,11 @@ export class ApiService {
             name: name
         }
         return this.http.post<ISearchResponse>(url, body);
+    }
+    filterHospitals(
+        data:IFilter
+    ){
+        let url = this.url + "/filters";
+        return this.http.get<IFilterResponse>(url,{params: data});
     }
 }

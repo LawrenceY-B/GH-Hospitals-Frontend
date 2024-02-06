@@ -17,6 +17,7 @@ export type ISearchResponse = {
 };
 
 export type ISearch = {
+  _id?: string;
   District: string;
   FacilityName: string;
   ImgUrl: string;
@@ -26,4 +27,15 @@ export type ISearch = {
   Region: string;
   Town: string;
   Type: string;
+  __v?: number;
+};
+export type IFilter ={
+  ownership: string;
+  type: string;
+  town: string;
+}
+export type IFilterResponse = {
+  success: boolean;
+  data: ISearch[];
+  message: string;
 };
