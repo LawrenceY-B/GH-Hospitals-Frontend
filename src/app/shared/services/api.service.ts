@@ -37,4 +37,8 @@ export class ApiService {
         let url = this.url + "/filters";
         return this.http.get<IFilterResponse>(url,{params: data});
     }
+    getallHospitals(){
+        let url = this.url + "/allHospitals";
+        return this.http.get<ISearchResponse>(url);
+    }
 }
